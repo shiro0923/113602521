@@ -65,47 +65,7 @@ vision_client = ComputerVisionClient(
 # 初始化 Flask 應用
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-import sys
-import configparser
-import logging
-import requests
-import librosa
-import os
-import uuid
-import time
 
-from pydub import AudioSegment
-
-import azure.cognitiveservices.speech as speechsdk
-from io import BytesIO
-from azure.ai.translation.text import TextTranslationClient
-from azure.core.credentials import AzureKeyCredential
-from azure.core.exceptions import HttpResponseError
-from azure.cognitiveservices.vision.computervision import ComputerVisionClient
-from msrest.authentication import CognitiveServicesCredentials
-from flask import Flask, request, abort
-from linebot.v3 import WebhookHandler
-from linebot.v3.exceptions import InvalidSignatureError
-from linebot.v3.webhooks import MessageEvent, TextMessageContent, ImageMessageContent
-from linebot.v3.messaging import Configuration, ApiClient, MessagingApi, ReplyMessageRequest, TextMessage, AudioMessage
-
-#from configparser import ConfigParser
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage
-
-
-# 設定檔案保存時間（秒），例如 24 小時
-MAX_FILE_AGE = 12 * 60 * 60  
-MAX_FILES = 40  # 最大檔案數量
-# 設定日誌
-logging.basicConfig(level=logging.INFO)
-
-
-
-
-
-# 讀取設定檔案
-config = configparser.ConfigParser
 # 初始化 LINE Bot API
 channel_access_token = config['Line']['CHANNEL_ACCESS_TOKEN']
 channel_secret = config['Line']['CHANNEL_SECRET']
