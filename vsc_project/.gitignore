@@ -1,34 +1,10 @@
-# Python cache files
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.pkl
-*.log
 
-# Virtual environment
-venv/
-env/
-.venv/
-
-# Configuration files
 config.ini
 
 note
 
-# Audio files (generated dynamically)
 static/*.wav
 static/*.mp3
 
-# Operating system files
-.DS_Store
-Thumbs.db
-
-# VSCode project files
 .vscode/
-
-# Byte-compiled debug symbols
-*.so
-
-# Git-related
-.git/
