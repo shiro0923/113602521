@@ -1,0 +1,11 @@
+flask
+line-bot-sdk
+pydub
+librosa
+azure-cognitiveservices-speech
+azure-ai-translation-text
+azure-core
+azure-cognitiveservices-vision-computervision
+msrest
+requests
+langchain_google_genai
