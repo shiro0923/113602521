@@ -131,6 +131,7 @@ def message_text(event):
     # 呼叫 Azure 翻譯服務，翻譯使者傳來的文字
     translation_result, r_t_0, r_t_1, d_l_0, d_l_1 = azure_translate(event.message.text)
     print(translation_result)
+   
 
     audio_duration_0, file_name_0 = azure_speech(r_t_0, d_l_0)
     audio_duration_1, file_name_1 = azure_speech(r_t_1, d_l_1)
@@ -171,6 +172,7 @@ def handle_image_message(event):
     image_stream = BytesIO(response.content)
     #Azure 圖片分析
     analysis_result, description= analyze_image_with_azure(image_stream)
+    
     # 使用 Google Gemini
     gemini_explain = gemini(description)
     #翻譯&轉語音
@@ -316,7 +318,14 @@ def azure_translate(user_input):
         translations = response[0].translations
         detected_language = response[0].detected_language.language
 
-        language_map = {
+        result_map = {
+            "zh-Hant": [f"Japanese : {translations[1].text}\nEnglish : {translations[0].text}"],
+            "zh-Hans": [f"Japanese : {translations[1].text}\nEnglish : {translations[0].text}"],
+            "ja": [f"Chinese : {translations[2].text}\nEnglish : {translations[0].text}"],
+            "en": [f"Chinese : {translations[2].text}\nJapanese : {translations[1].text}"]
+        }
+
+        text_map = {
             "zh-Hant": [translations[1].text, translations[0].text],
             "zh-Hans": [translations[1].text, translations[0].text],
             "ja": [translations[2].text, translations[0].text],
@@ -330,9 +339,11 @@ def azure_translate(user_input):
             "en": ["zh-Hant", "ja"]
         }
         
-        result_text_0, result_text_1 = language_map.get(detected_language, ["翻譯結果不可用", "翻譯結果不可用"])
+        result_text_0, result_text_1 = text_map.get(detected_language, ["翻譯結果不可用", "翻譯結果不可用"])
         detected_language_0, detected_language_1 = detected_language_map.get(detected_language, ["None", "None"])
-        result = "\n".join(language_map.get(detected_language, ["翻譯結果不可用"]))
+
+        result = "\n".join(result_map.get(detected_language, ["翻譯結果不可用"]))
+
         return result, result_text_0, result_text_1, detected_language_0, detected_language_1
     except HttpResponseError as exception:
         error_message = f"Azure 翻譯服務錯誤：{exception.error.message}"
@@ -352,8 +363,10 @@ def analyze_image_with_azure(image_stream):
         description = analysis.description.captions[0].text if analysis.description.captions else "無法辨識圖片內容"
         objects = [obj.object_property for obj in analysis.objects]
 
-        reslut = f"圖片分析結果：\n描述：{description}\n物件：{', '.join(objects)}"
-        return reslut, description
+        _, translation_description, _, _, _  = azure_translate(description)
+        _, translation_objects, _, _, _  = azure_translate(objects)
+        result = f"圖片分析結果：\n描述：{translation_description}\n物件：{', '.join(translation_objects)}"
+        return result, description
     except Exception as e:
         error_message = f"Azure 電腦視覺錯誤：{e}"
         response = log_and_return_error(error_message)
@@ -364,10 +377,10 @@ def analyze_image_with_azure(image_stream):
 
 def gemini(description):
     try:
-        question = "describe a scene of" + description + "to a viually repaired within 50 words"
-        role_description = "你是一位5歲小孩，請使用繁體中文回答。"
+        question = "describe a scene of" + description + "to a visually impaired within 50 words"
+        #role_description = "你是一位5歲小孩，請使用繁體中文回答。"
         # 使用 Google Gemini
-        messages = [HumanMessage(content=f"{role_description}\n{question}")]
+        messages = [HumanMessage(content=question)]
         result = llm.invoke(messages)
         answer = result.content
         return answer
