@@ -364,8 +364,9 @@ def analyze_image_with_azure(image_stream):
         objects = [obj.object_property for obj in analysis.objects]
 
         _, translation_description, _, _, _  = azure_translate(description)
-        _, translation_objects, _, _, _  = azure_translate(objects)
-        result = f"圖片分析結果：\n描述：{translation_description}\n物件：{', '.join(translation_objects)}"
+        _, translation_objects_0, _, _, _  = azure_translate(objects)
+        translation_objects_1 = f"{', '.join(translation_objects_0)}"
+        result = f"圖片分析結果：\n描述：{translation_description}\n物件：{', '.join(translation_objects_1)}"
         return result, description
     except Exception as e:
         error_message = f"Azure 電腦視覺錯誤：{e}"
